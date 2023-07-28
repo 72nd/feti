@@ -1,0 +1,23 @@
+[project]
+name = "project"
+authors = [
+    {name = "NAME", email = "NAME@example.com"}
+]
+description = "DESCRIPTION"
+version = "0.1.0"
+dependencies = [
+    "click",
+    "fastapi",
+    "Jinja2",
+    "nocodb@git+https://github.com/alex-berlin-tv/python-nocodb.git#egg=relation_create",
+    "pydantic",
+    "typed-settings",
+    "typer",
+    "uvicorn",
+]
+
+[tool.setuptools]
+packages = ["project"]
+
+[project.scripts]
+project = "project:__main__.app"
