@@ -15,7 +15,7 @@ This template provides the my default structure for **small** web projects. The 
 
 1. Modify the `pyproject.toml`
 2. Modify the `settings.toml` make sure to modify `[project]` to the name of your application
-2. Modify the `.secrets.toml` make sure to modify `[project]` to the name of your application
+2. Modify the `secrets.tpl.toml` make sure to modify `[project]` to the name of your application
 4. Modify `appname` in `PACKAGE_NAME/config.py`
 5. Adapt your models in `PACKAGE_NAME/models.py`
 6. Document the NocoDB model in the Readme

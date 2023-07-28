@@ -3,36 +3,30 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Project</title>
+    <title>{{ title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="apple-touch-icon" sizes="180x180" href="static/img/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="static/img/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="static/img/favicon-16x16.png">
-    <link rel="manifest" href="static/img/site.webmanifest">
-    <link rel="mask-icon" href="static/img/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff">
+    <link rel="icon" type="image/svg" href="static/img/favicon.svg">
 
     <link href="static/css/bulma.min.css" rel="stylesheet" />
     <link href="static/css/fontawesome.min.css" rel="stylesheet" />
     <link href="static/css/regular.min.css" rel="stylesheet" />
     <link href="static/css/solid.min.css" rel="stylesheet" />
 
-    <meta property="og:title" content="Project" />
-    <meta property="og:Description" content="Lorem Ipsum" />
-    <meta property="og:type" content="video.movie" />
-    <meta property="og:url" content="website" />
-    <meta property="og:image" content="" />
+    <meta property="og:title" content="{{ title }}" />
+    <meta property="og:Description" content="{{ description }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="timetable.festivalfuerfreunde.de" />
+    <meta property="og:image" content="static/image/open_graph.png" />
 
     <script defer src="static/js/alpinejs.min.js"></script>
 </head>
 
 <body>
-    <nav class="navbar is-primary" x-data="{is_open: false}" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-info" x-data="{is_open: false}" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="#">
-                <img src="static/img/logo.svg" alt="Hedylogos Editor" width="112" height="28">
+                <img src="static/img/logo.svg" alt="Logo" width="75" height="28">
             </a>
             <div :class="['navbar-burger', is_open ? 'is-active' : '']" role="button" data-target="navbar"
                 @click="is_open= !is_open">
@@ -47,9 +41,17 @@
                 <a class="navbar-item">
                     <span class="icon-text">
                         <span class="icon">
-                            <i class="fas fa-star"></i>
+                            <i class="fas fa-clock"></i>
                         </span>
-                        <span>A item</span>
+                        <span>Events</span>
+                    </span>
+                </a>
+                <a class="navbar-item">
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-paintbrush"></i>
+                        </span>
+                        <span>Exhibitions</span>
                     </span>
                 </a>
             </div>

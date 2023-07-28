@@ -9,9 +9,8 @@ app = typer.Typer()
 
 @app.command()
 def run():
-    print(settings)
     uvicorn.run(
-        "project.server:app",
+        "feti.server:app",
         reload=settings.dev_mode,
         port=settings.port,
         proxy_headers=settings.proxy_headers,

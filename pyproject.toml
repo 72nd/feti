@@ -1,9 +1,9 @@
 [project]
-name = "project"
+name = "feti"
 authors = [
-    {name = "NAME", email = "NAME@example.com"}
+    {name = "72nd", email = "msg@72nd.com"}
 ]
-description = "DESCRIPTION"
+description = "Simple timetable for festivals"
 version = "0.1.0"
 dependencies = [
     "click",
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["project"]
+packages = ["feti"]
 
 [project.scripts]
-project = "project:__main__.app"
+feti = "feti:__main__.app"

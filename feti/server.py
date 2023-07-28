@@ -1,3 +1,4 @@
+from .config import settings
 from .log import logger
 from .model import NocoCourses, NocoPersons
 
@@ -16,7 +17,12 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
 async def root(request: Request):
-    return templates.TemplateResponse("index.html.jinja2", {"request": request})
+    data = {
+        "title": settings.title,
+        "description": settings.description,
+        "request": request,
+    }
+    return templates.TemplateResponse("index.html.jinja2", data)
 
 
 @app.get("/api/course")
