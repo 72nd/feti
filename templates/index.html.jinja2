@@ -24,7 +24,7 @@
                 </div>
                 <template x-for="entry in event_data.schedule">
                     <template x-if="show_entry(entry)">
-                        <div class="card mt-4">
+                        <div class="card mt-4" @click="entry_clicked(entry)">
                             <div class="card-content">
                                 <div class="media">
                                     <div class="media-content">
@@ -52,18 +52,37 @@
             </div>
         </template>
     </section>
-    <div :class="['modal', show_detail ? 'is-active' : '']">
-        <div class="modal-background"></div>
-        <div class="modal-card">
-            <header class="modal-card-head">
-                <p class="modal-card-title">Modal title</p>
-                <button class="delete" aria-label="close" @click="show_detail=false"></button>
-            </header>
-            <section class="modal-card-body">
-                <!-- Content ... -->
-            </section>
+    <template x-if="detail_entry !== null">
+        <div :class="['modal', show_detail ? 'is-active' : '']">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title"><i class="fas fa-circle-info"></i> About</p>
+                    <button class="delete" aria-label="close" @click="show_detail=false"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="content">
+                        <h2>
+                            <span x-text="detail_entry.artist_name"></span>
+                            <template x-if="detail_entry.title !== null && detail_entry.title !== 'n.n.'">
+                                <span>– <em><span x-text="detail_entry.title"></span></em></span>
+                            </template>
+                        </h2>
+                        <p x-text="detail_entry.description"></p>
+                        <template x-if="detail_entry.artist_cv !== null">
+                            <div>
+                                <h3>About the Artist</h3>
+                                <p x-text="detail_entry.artist_cv"></p>
+                            </div>
+                        </template>
+                    </div>
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button" @click="show_detail = false">Close</button>
+                </footer>
+            </div>
         </div>
-    </div>
+    </template>
 </div>
 {% endblock %}
 {% block script_footer %}
@@ -76,7 +95,8 @@
             event_data: null,
             selected_date: null,
             selected_date_raw: null,
-            show_detail: true,
+            detail_entry: null,
+            show_detail: false,
 
             fetch_data() {
                 fetch("api/timetable")
@@ -90,7 +110,6 @@
                         if (this.fetch_error === null) {
                             this.is_data_loaded = true;
                             this.event_data = data;
-                            console.log(data);
                             this.selected_date = new Date(data.dates[0]);
                             this.selected_date_raw = data.dates[0];
                         } else if ("detail" in data) {
@@ -119,6 +138,10 @@
             change_day(day) {
                 this.selected_date = new Date(day);
                 this.selected_date_raw = day;
+            },
+            entry_clicked(entry) {
+                this.detail_entry = entry;
+                this.show_detail = true;
             },
         }
     }
