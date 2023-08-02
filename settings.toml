@@ -3,20 +3,21 @@ port = 8000
 proxy_headers = true
 nocodb_url = "https://noco.1-2-wir.org"
 nocodb_org_name = "noco"
-project_name = "Test Project"
-log_level = "INFO"
+project_name = "Festival für Freunde"
+log_level = "DEBUG"
 dev_mode = true
+cache_persistance_duration = 30
 
-table_timetable = "23_timetable"
+table_timetable = "23_timetable_test"
 table_entries = "23_bewerbungen"
 table_location = "23_location"
 column_timetable_when = "when"
 column_timetable_entry = "entry"
 column_entries_artist_name = "name"
-column_entries_title = "title"
-column_entries_genre = "genre"
-column_entries_description = "description"
 column_entries_artist_cv = "cv_artist"
+column_entries_title = "title"
+column_entries_description = "description"
+column_entries_genre = "genre"
 column_entries_location = "location"
 column_location_name = "name"
 
