@@ -1,11 +1,11 @@
 from .cache import DataCache
 from .config import settings
 from .log import logger
-from .model import NocoTimetable
 
 import asyncio
+import datetime
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from nocodb.exceptions import NocoDBAPIError
@@ -19,6 +19,13 @@ templates = Jinja2Templates(directory="templates")
 
 
 cache = DataCache()
+
+
+def log_request():
+    if not settings.request_log_file and not isinstance(settings.request_log_file, str):
+        return
+    with open(settings.request_log_file, "a") as f:
+        f.write(datetime.datetime.now().isoformat())
 
 
 @app.on_event("startup")
@@ -37,7 +44,8 @@ async def root(request: Request):
 
 
 @app.get("/api/timetable")
-async def get_timetable():
+async def get_timetable(background_tasks: BackgroundTasks):
+    background_tasks.add_task(log_request)
     try:
         data = await cache.get()
     except NocoDBAPIError as e:

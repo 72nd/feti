@@ -1,3 +1,4 @@
+from typing import Union
 import typed_settings as ts
 
 
@@ -27,6 +28,8 @@ class Settings:
     """
     max_lead_length: int
     """Max char length of lead text."""
+    request_log_file: Union[bool,str]
+    """If set, the requests will be logged with a timestamp."""
     table_timetable: str
     table_entries: str
     table_location: str
