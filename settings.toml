@@ -8,7 +8,7 @@ log_level = "DEBUG"
 dev_mode = true
 cache_persistance_duration = 30
 max_lead_length = 300
-request_log_file = false
+request_log_file = ""
 
 table_timetable = "23_timetable"
 table_entries = "23_bewerbungen"
