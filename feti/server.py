@@ -25,7 +25,7 @@ def log_request():
     if not settings.request_log_file and not isinstance(settings.request_log_file, str):
         return
     with open(settings.request_log_file, "a") as f:
-        f.write(datetime.datetime.now().isoformat())
+        f.write("\n"+datetime.datetime.now().isoformat())
 
 
 @app.on_event("startup")
