@@ -28,8 +28,12 @@
                             <div class="card-content">
                                 <div class="media">
                                     <div class="media-content">
-                                        <p class="title is-4"><span x-text="entry.artist_name"></span> – <em><span
-                                                    x-text="entry.title"></span></em></p>
+                                        <p class="title is-4">
+                                            <span x-text="entry.artist_name"></span>
+                                            <template x-if="entry.title !== null && entry.title !== 'n.n.'">
+                                                <span>– <em><span x-text="entry.title"></span></em></span>
+                                            </template>
+                                        </p>
                                         <p class="subtitle is-6"><span x-text="render_time(entry.when)"></span>, <span
                                                 x-text="entry.location"></span></p>
                                     </div>
@@ -48,6 +52,18 @@
             </div>
         </template>
     </section>
+    <div :class="['modal', show_detail ? 'is-active' : '']">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modal title</p>
+                <button class="delete" aria-label="close" @click="show_detail=false"></button>
+            </header>
+            <section class="modal-card-body">
+                <!-- Content ... -->
+            </section>
+        </div>
+    </div>
 </div>
 {% endblock %}
 {% block script_footer %}
@@ -60,6 +76,7 @@
             event_data: null,
             selected_date: null,
             selected_date_raw: null,
+            show_detail: true,
 
             fetch_data() {
                 fetch("api/timetable")
