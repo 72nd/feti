@@ -7,12 +7,14 @@ project_name = "Festival für Freunde"
 log_level = "DEBUG"
 dev_mode = true
 cache_persistance_duration = 30
+max_lead_length = 300
 
 table_timetable = "23_timetable_test"
 table_entries = "23_bewerbungen"
 table_location = "23_location"
 column_timetable_when = "when"
 column_timetable_entry = "entry"
+column_timetable_location = "location"
 column_entries_artist_name = "name"
 column_entries_artist_cv = "cv_artist"
 column_entries_title = "title"

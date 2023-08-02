@@ -15,45 +15,33 @@
             <div>
                 <div class="tabs is-centered">
                     <ul>
-                        <template x-for="date in timetable.dates">
+                        <template x-for="date in event_data.dates">
                             <li :class="[date == selected_date ? 'is-active' : '']"><a x-text="render_date(date)"></a>
                             </li>
                         </template>
                     </ul>
                 </div>
-                <div class="card">
-                    <div class="card-content">
-                        <div class="media">
-                            <!--
-                    <div class="media-left">
-                        <figure class="image is-48x48">
-                            <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
-                        </figure>
-                    </div>
-                    -->
-                            <div class="media-content">
-                                <p class="title is-4">Thater im Kino – <em>All Nights in my head</em></p>
-                                <p class="subtitle is-6">18:00, Theaterstall</p>
+                <template x-for="entry in event_data.schedule">
+                    <div class="card mt-4">
+                        <div class="card-content">
+                            <div class="media">
+                                <div class="media-content">
+                                    <p class="title is-4"><span x-text="entry.artist_name"></span> – <em><span
+                                                x-text="entry.title"></span></em></p>
+                                    <p class="subtitle is-6"><span x-text="render_time(entry.when)"></span>, <span
+                                            x-text="entry.location"></span></p>
+                                </div>
+                                <div class="tags are-medium">
+                                    <span class="tag is-link" x-text="entry.genre"></span>
+                                </div>
                             </div>
-                            <div class="tags are-medium">
-                                <span class="tag is-link">Theater</span>
-                                <span class="tag is-link">BrRh</span>
-                            </div>
-                        </div>
 
-                        <div class="content">
-                            Ein Gedanke. Licht an. Noch ein Gedanke. Überflutet die Bühne. Noch ein Gedanke. Kein
-                            Schlaf.
-                            Hunderte Gedanken prasseln auf dich hernieder wie der Regen. Du liegst im Bett, ertrinkst in
-                            Erinnerungen. Wenn du deinen Kopf in den Schoß der Schlaflosigkeit legst, streichelt sie
-                            deine
-                            Haare, flüstert in dein Ohr. "Du musst etwas tun", sagt sie. Nur was, das verrät sie dir
-                            nicht.
-                            Ein
-                            Stück, wie eine schlaflose Nacht.
+                            <div class="content">
+                                <span x-text="entry.lead"></span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </template>
             </div>
         </template>
     </section>
@@ -66,7 +54,7 @@
             is_data_loaded: false,
             fetch_error: null,
             fetch_error_detail: "",
-            timetable: null,
+            event_data: null,
             selected_date: null,
 
             fetch_data() {
@@ -80,7 +68,7 @@
                     .then(data => {
                         if (this.fetch_error === null) {
                             this.is_data_loaded = true;
-                            this.timetable = data;
+                            this.event_data = data;
                             this.selected_date = data.dates[0];
                         } else if ("detail" in data) {
                             this.fetch_error_detail = data.detail;
@@ -94,6 +82,12 @@
                 const day_number = date.getDate();
                 const month = date.getMonth() + 1;
                 return `${day_name}, ${day_number}.${month}`;
+            },
+            render_time(date_str) {
+                const date = new Date(date_str);
+                const hour = date.getHours();
+                const minute = String(date.getMinutes()).padStart(2, "0");
+                return `${hour}:${minute}`;
             }
         }
     }

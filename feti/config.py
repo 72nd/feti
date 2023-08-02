@@ -25,11 +25,14 @@ class Settings:
     How many seconds the data cache should be persistent until it
     gets refreshed.
     """
+    max_lead_length: int
+    """Max char length of lead text."""
     table_timetable: str
     table_entries: str
     table_location: str
     column_timetable_when: str
     column_timetable_entry: str
+    column_timetable_location: str
     column_entries_artist_name: str
     column_entries_title: str
     column_entries_genre: str

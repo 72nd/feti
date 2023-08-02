@@ -51,7 +51,6 @@ class NocoEntry(BaseModel):
     title: Optional[str] = Field(alias=settings.column_entries_title)
     genre: Optional[str] = Field(alias=settings.column_entries_genre)
     description: Optional[str] = Field(alias=settings.column_entries_description)
-    location: str = ""
     # location: Optional[NocoLocations] = None
 
     # @model_validator(mode="after")
@@ -74,19 +73,27 @@ class NocoTimeSlot(BaseModel):
     updated_at: datetime = Field(alias="UpdatedAt")
     when: datetime = Field(alias=settings.column_timetable_when)
     linked_entry: Optional[NocoEntry] = None
+    linked_location: Optional[NocoLocation] = None
 
     @model_validator(mode="after")
     def load_linked_entry(self):
         client = get_nocodb_client()
-        raw = client.table_row_nested_relations_list(
+        raw_entry = client.table_row_nested_relations_list(
             get_nocodb_project(),
             settings.table_timetable,
             "hm",
             self.noco_id,
-            "entry",
+            settings.column_timetable_entry,
         )
-        print(raw)
-        self.linked_entry = NocoEntry.model_validate(raw["list"][0])
+        self.linked_entry = NocoEntry.model_validate(raw_entry["list"][0])
+        raw_location = client.table_row_nested_relations_list(
+            get_nocodb_project(),
+            settings.table_timetable,
+            "mm",
+            self.noco_id,
+            settings.column_timetable_location,
+        )
+        self.linked_location = NocoLocation.model_validate(raw_location["list"][0])
         return self
 
 
@@ -100,60 +107,13 @@ class NocoTimetable(RootModel[list[NocoTimeSlot]]):
         return cls.model_validate(raw["list"], strict=False)
 
 
-class NocoPerson(BaseModel):
-    noco_id: int = Field(alias="Id")
-    created_at: datetime = Field(alias="CreatedAt")
-    updated_at: datetime = Field(alias="UpdatedAt")
-    name: str = Field(alias="Name")
-    age: int = Field(alias="Age")
-
-
-class NocoPersons(RootModel[list[NocoPerson]]):
-    root: list[NocoPerson]
-
-    @classmethod
-    def from_nocodb(cls):
-        raw = get_nocodb_data("Person")
-        return cls.model_validate(raw["list"])
-
-
-class NocoCourse(BaseModel):
-    noco_id: int = Field(alias="Id")
-    created_at: datetime = Field(alias="CreatedAt")
-    updated_at: datetime = Field(alias="UpdatedAt")
-    name: str = Field(alias="Name")
-    students: Optional[NocoPersons] = None
-
-    @model_validator(mode="after")
-    def load_linked_students(self):
-        client = get_nocodb_client()
-        raw = client.table_row_nested_relations_list(
-            get_nocodb_project(),
-            "Course",
-            "mm",
-            self.noco_id,
-            "Students"
-        )
-        self.students = NocoPersons.model_validate(raw["list"])
-        return self
-
-
-class NocoCourses(RootModel[list[NocoCourse]]):
-    root: list[NocoCourse]
-
-    @classmethod
-    def from_nocodb(cls):
-        raw = get_nocodb_data("Course")
-        return cls.model_validate(raw["list"], strict=False)
-
-
 class ClientEntry(BaseModel):
     item_id: int
     when: datetime
     title: Optional[str]
     lead: Optional[str]
     description: Optional[str]
-    genres: list[str] = []
+    genre: Optional[str]
     artist_name: Optional[str]
     artist_cv: Optional[str]
     location: Optional[str]
@@ -162,19 +122,25 @@ class ClientEntry(BaseModel):
     def from_noco_model(cls, slot: NocoTimeSlot):
         if not slot.linked_entry:
             raise ValueError(f"TimeSlot with id {slot.noco_id} has no linked entry")
+        if not slot.linked_location:
+            raise ValueError(f"TimeSlot with id {slot.noco_id} has no linked location")
         lead = "TODO"
-        genres = ["TODO"]
         return cls(
             item_id = slot.noco_id,
             when = slot.when,
             title = slot.linked_entry.title,
-            lead = lead,
+            lead = cls.generate_lead(slot.linked_entry.description),
             description = slot.linked_entry.description,
-            genres = genres,
+            genre = slot.linked_entry.genre,
             artist_name = slot.linked_entry.artist_name,
             artist_cv = slot.linked_entry.artist_cv,
-            location = slot.linked_entry.location,
+            location = slot.linked_location.name,
         )
+    
+    @staticmethod
+    def generate_lead(description: Optional[str]) -> Optional[str]:
+        return "lead"
+
 
 
 

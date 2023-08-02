@@ -1,7 +1,7 @@
 from .cache import DataCache
 from .config import settings
 from .log import logger
-from .model import NocoCourses, NocoPersons, NocoTimetable
+from .model import NocoTimetable
 
 import asyncio
 
