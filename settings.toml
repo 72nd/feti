@@ -9,7 +9,7 @@ dev_mode = true
 cache_persistance_duration = 30
 max_lead_length = 300
 
-table_timetable = "23_timetable_test"
+table_timetable = "23_timetable"
 table_entries = "23_bewerbungen"
 table_location = "23_location"
 column_timetable_when = "when"

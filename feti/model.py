@@ -103,7 +103,6 @@ class NocoTimetable(RootModel[list[NocoTimeSlot]]):
     @classmethod
     def from_nocodb(cls):
         raw = get_nocodb_data(settings.table_timetable)
-        print(raw)
         return cls.model_validate(raw["list"], strict=False)
 
 
@@ -111,7 +110,7 @@ class ClientEntry(BaseModel):
     item_id: int
     when: datetime
     title: Optional[str]
-    lead: Optional[str]
+    lead: str
     description: Optional[str]
     genre: Optional[str]
     artist_name: Optional[str]
@@ -124,7 +123,6 @@ class ClientEntry(BaseModel):
             raise ValueError(f"TimeSlot with id {slot.noco_id} has no linked entry")
         if not slot.linked_location:
             raise ValueError(f"TimeSlot with id {slot.noco_id} has no linked location")
-        lead = "TODO"
         return cls(
             item_id = slot.noco_id,
             when = slot.when,
@@ -138,8 +136,21 @@ class ClientEntry(BaseModel):
         )
     
     @staticmethod
-    def generate_lead(description: Optional[str]) -> Optional[str]:
-        return "lead"
+    def generate_lead(description: Optional[str]) -> str:
+        if not description:
+            return "n.n."
+        if len(description) <= settings.max_lead_length:
+            return description
+        parts = description.split(".")
+        rsl = ""
+        for part in parts:
+            if len(rsl+part) > settings.max_lead_length:
+                break
+            if rsl == "":
+                rsl = part
+            else:
+                rsl = f"{rsl}.{part}"
+        return f"{rsl}..."
 
 
 

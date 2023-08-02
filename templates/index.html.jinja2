@@ -16,31 +16,34 @@
                 <div class="tabs is-centered">
                     <ul>
                         <template x-for="date in event_data.dates">
-                            <li :class="[date == selected_date ? 'is-active' : '']"><a x-text="render_date(date)"></a>
+                            <li :class="[date == selected_date_raw ? 'is-active' : '']" @click="change_day(date)"><a
+                                    x-text="render_date(date)"></a>
                             </li>
                         </template>
                     </ul>
                 </div>
                 <template x-for="entry in event_data.schedule">
-                    <div class="card mt-4">
-                        <div class="card-content">
-                            <div class="media">
-                                <div class="media-content">
-                                    <p class="title is-4"><span x-text="entry.artist_name"></span> – <em><span
-                                                x-text="entry.title"></span></em></p>
-                                    <p class="subtitle is-6"><span x-text="render_time(entry.when)"></span>, <span
-                                            x-text="entry.location"></span></p>
+                    <template x-if="show_entry(entry)">
+                        <div class="card mt-4">
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-content">
+                                        <p class="title is-4"><span x-text="entry.artist_name"></span> – <em><span
+                                                    x-text="entry.title"></span></em></p>
+                                        <p class="subtitle is-6"><span x-text="render_time(entry.when)"></span>, <span
+                                                x-text="entry.location"></span></p>
+                                    </div>
+                                    <div class="tags are-medium">
+                                        <span class="tag is-link" x-text="entry.genre"></span>
+                                    </div>
                                 </div>
-                                <div class="tags are-medium">
-                                    <span class="tag is-link" x-text="entry.genre"></span>
-                                </div>
-                            </div>
 
-                            <div class="content">
-                                <span x-text="entry.lead"></span>
+                                <div class="content">
+                                    <span x-text="entry.lead"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </template>
                 </template>
             </div>
         </template>
@@ -56,6 +59,7 @@
             fetch_error_detail: "",
             event_data: null,
             selected_date: null,
+            selected_date_raw: null,
 
             fetch_data() {
                 fetch("api/timetable")
@@ -69,7 +73,9 @@
                         if (this.fetch_error === null) {
                             this.is_data_loaded = true;
                             this.event_data = data;
-                            this.selected_date = data.dates[0];
+                            console.log(data);
+                            this.selected_date = new Date(data.dates[0]);
+                            this.selected_date_raw = data.dates[0];
                         } else if ("detail" in data) {
                             this.fetch_error_detail = data.detail;
                         }
@@ -88,7 +94,15 @@
                 const hour = date.getHours();
                 const minute = String(date.getMinutes()).padStart(2, "0");
                 return `${hour}:${minute}`;
-            }
+            },
+            show_entry(entry) {
+                const date = new Date(Date.parse(entry.when));
+                return date.toDateString() == this.selected_date.toDateString();
+            },
+            change_day(day) {
+                this.selected_date = new Date(day);
+                this.selected_date_raw = day;
+            },
         }
     }
 </script>

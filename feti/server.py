@@ -28,8 +28,6 @@ async def on_startup():
 
 @app.get("/")
 async def root(request: Request):
-    test = NocoTimetable.from_nocodb()
-    print(test)
     data = {
         "title": settings.title,
         "description": settings.description,
@@ -42,17 +40,6 @@ async def root(request: Request):
 async def get_timetable():
     try:
         data = await cache.get()
-    except NocoDBAPIError as e:
-        message = f"NocoDBAPIError. Message: {e}. Response Text: {e.response_text}"
-        logger.error(message)
-        raise HTTPException(status_code=500, detail=message)
-    return data
-
-
-@app.get("/api/person")
-async def get_persons():
-    try:
-        data = {}
     except NocoDBAPIError as e:
         message = f"NocoDBAPIError. Message: {e}. Response Text: {e.response_text}"
         logger.error(message)
