@@ -1,88 +1,127 @@
 {% extends "base.html.jinja2" %}
 {% block content %}
 <div x-data="data()" x-init="fetch_data()">
-    <section class="section">
-        <div class="notification is-warning" x-show="!is_data_loaded && !fetch_error">
-            Bitte warten, die Daten werden geladen...
-        </div>
-        <template x-if="fetch_error">
-            <div class="notification is-danger" x-show="fetch_error">
-                <p><b>Error while fetching data (Error <span x-text="fetch_error.status"></span>)</b>
-                <p class="is-size-7">Details: <span x-text="fetch_error_detail"></span>.</p>
+    <nav class="navbar is-info" x-data="{is_open: false}" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="#">
+                <img src="static/img/logo.svg" alt="Logo" width="75" height="28">
+            </a>
+            <div :class="['navbar-burger', is_open ? 'is-active' : '']" role="button" data-target="navbar"
+                @click="is_open= !is_open">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
             </div>
-        </template>
-        <template x-if="is_data_loaded && !fetch_error">
-            <div>
-                <div class="tabs is-centered">
-                    <ul>
-                        <template x-for="date in event_data.dates">
-                            <li :class="[date == selected_date_raw ? 'is-active' : '']" @click="change_day(date)"><a
-                                    x-text="render_date(date)"></a>
-                            </li>
-                        </template>
-                    </ul>
-                </div>
-                <template x-for="entry in event_data.schedule">
-                    <template x-if="show_entry(entry)">
-                        <div class="card mt-4" @click="entry_clicked(entry)">
-                            <div class="card-content">
-                                <div class="media">
-                                    <div class="media-content">
-                                        <p class="title is-4">
-                                            <span x-text="entry.artist_name"></span>
-                                            <template x-if="entry.title !== null && entry.title !== 'n.n.'">
-                                                <span>– <em><span x-text="entry.title"></span></em></span>
-                                            </template>
-                                        </p>
-                                        <p class="subtitle is-6"><span x-text="render_time(entry.when)"></span>, <span
-                                                x-text="entry.location"></span></p>
-                                    </div>
-                                    <div class="tags are-medium">
-                                        <span class="tag is-link" x-text="entry.genre"></span>
-                                    </div>
-                                </div>
+        </div>
 
-                                <div class="content">
-                                    <span x-text="entry.lead"></span>
-                                </div>
-                            </div>
+        <div id="navbar" :class="['navbar-menu', is_open ? 'is-active' : '']">
+            <div class="navbar-start">
+                <a class="navbar-item" @click="mode='events'">
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-clock"></i>
+                        </span>
+                        <span>Events</span>
+                    </span>
+                </a>
+                <a class="navbar-item" @click="mode='exhibitions'">
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-paintbrush"></i>
+                        </span>
+                        <span>Exhibitions</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <main>
+        <section class="section">
+            <div class="notification is-warning" x-show="!is_data_loaded && !fetch_error">
+                Bitte warten, die Daten werden geladen...
+            </div>
+            <template x-if="fetch_error">
+                <div class="notification is-danger" x-show="fetch_error">
+                    <p><b>Error while fetching data (Error <span x-text="fetch_error.status"></span>)</b>
+                    <p class="is-size-7">Details: <span x-text="fetch_error_detail"></span>.</p>
+                </div>
+            </template>
+            <template x-if="is_data_loaded && !fetch_error">
+                <div>
+                    <template x-if="mode === 'events'">
+                        <div class="tabs is-centered">
+                            <ul>
+                                <template x-for="date in event_data.dates">
+                                    <li :class="[date == selected_date_raw ? 'is-active' : '']"
+                                        @click="change_day(date)"><a x-text="render_date(date)"></a>
+                                    </li>
+                                </template>
+                            </ul>
                         </div>
                     </template>
-                </template>
-            </div>
-        </template>
-    </section>
-    <template x-if="detail_entry !== null">
-        <div :class="['modal', show_detail ? 'is-active' : '']">
-            <div class="modal-background"></div>
-            <div class="modal-card">
-                <header class="modal-card-head">
-                    <p class="modal-card-title"><i class="fas fa-circle-info"></i> About</p>
-                    <button class="delete" aria-label="close" @click="show_detail=false"></button>
-                </header>
-                <section class="modal-card-body">
-                    <div class="content">
-                        <h2>
-                            <span x-text="detail_entry.artist_name"></span>
-                            <template x-if="detail_entry.title !== null && detail_entry.title !== 'n.n.'">
-                                <span>– <em><span x-text="detail_entry.title"></span></em></span>
-                            </template>
-                        </h2>
-                        <p x-text="detail_entry.description"></p>
-                        <template x-if="detail_entry.artist_cv !== null">
-                            <div>
-                                <h3>About the Artist</h3>
-                                <p x-text="detail_entry.artist_cv"></p>
+                    <template x-for="entry in event_data.schedule">
+                        <template x-if="show_entry(entry)">
+                            <div class="card mt-4" @click="entry_clicked(entry)">
+                                <div class="card-content">
+                                    <div class="media">
+                                        <div class="media-content">
+                                            <p class="title is-4">
+                                                <span x-text="entry.artist_name"></span>
+                                                <template x-if="entry.title !== null && entry.title !== 'n.n.'">
+                                                    <span>– <em><span x-text="entry.title"></span></em></span>
+                                                </template>
+                                            </p>
+                                            <p class="subtitle is-6"><span x-show="mode === 'events'"><span
+                                                        x-text="render_time(entry.when)"></span>,</span>
+                                                <span x-text="entry.location"></span>
+                                            </p>
+                                        </div>
+                                        <div class="tags are-medium">
+                                            <span class="tag is-link" x-text="entry.genre"></span>
+                                        </div>
+                                    </div>
+                                    <div class="content">
+                                        <span x-text="entry.lead"></span>
+                                    </div>
+                                </div>
                             </div>
                         </template>
-                    </div>
-                </section>
-                <footer class="modal-card-foot">
-                    <button class="button" @click="show_detail = false">Close</button>
-                </footer>
+                    </template>
+                </div>
+            </template>
+        </section>
+        <template x-if="detail_entry !== null">
+            <div :class="['modal', show_detail ? 'is-active' : '']">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title"><i class="fas fa-circle-info"></i> About</p>
+                        <button class="delete" aria-label="close" @click="show_detail=false"></button>
+                    </header>
+                    <section class="modal-card-body">
+                        <div class="content">
+                            <h2>
+                                <span x-text="detail_entry.artist_name"></span>
+                                <template x-if="detail_entry.title !== null && detail_entry.title !== 'n.n.'">
+                                    <span>– <em><span x-text="detail_entry.title"></span></em></span>
+                                </template>
+                            </h2>
+                            <p x-text="detail_entry.description"></p>
+                            <template x-if="detail_entry.artist_cv !== null">
+                                <div>
+                                    <h3>About the Artist</h3>
+                                    <p x-text="detail_entry.artist_cv"></p>
+                                </div>
+                            </template>
+                        </div>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button" @click="show_detail = false">Close</button>
+                    </footer>
+                </div>
             </div>
-        </div>
-    </template>
+        </template>
+    </main>
 </div>
 {% endblock %}
 {% block script_footer %}
@@ -96,7 +135,8 @@
             selected_date: null,
             selected_date_raw: null,
             detail_entry: null,
-            show_detail: false,
+            mode: "events",
+            show_exhibitions: false,
 
             fetch_data() {
                 fetch("api/timetable")
@@ -132,8 +172,11 @@
                 return `${hour}:${minute}`;
             },
             show_entry(entry) {
-                const date = new Date(Date.parse(entry.when));
-                return date.toDateString() == this.selected_date.toDateString();
+                if (this.mode === "events") {
+                    const date = new Date(Date.parse(entry.when));
+                    return date.toDateString() == this.selected_date.toDateString();
+                }
+                return entry.when === null
             },
             change_day(day) {
                 this.selected_date = new Date(day);
