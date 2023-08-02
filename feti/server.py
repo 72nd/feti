@@ -38,18 +38,15 @@ async def root(request: Request):
     return templates.TemplateResponse("index.html.jinja2", data)
 
 
-@app.get("/api/course")
-async def get_courses():
+@app.get("/api/timetable")
+async def get_timetable():
     try:
-        # data = NocoCourses.from_nocodb()
-        data = {}
+        data = await cache.get()
     except NocoDBAPIError as e:
         message = f"NocoDBAPIError. Message: {e}. Response Text: {e.response_text}"
         logger.error(message)
         raise HTTPException(status_code=500, detail=message)
-    # return data.model_dump()
     return data
-
 
 
 @app.get("/api/person")

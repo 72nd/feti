@@ -191,18 +191,18 @@ class ClientSchedule(RootModel[list[ClientEntry]]):
 
 class ClientModel(BaseModel):
     description: str
-    days: list[date]
+    dates: list[date]
     schedule: ClientSchedule
 
     @classmethod
     def from_noco_model(cls, timetable: NocoTimetable):
         schedule = ClientSchedule.from_noco_model(timetable)
-        days = []
+        dates = []
         for entry in schedule.root:
-            if entry.when.date() not in days:
-                days.append(entry.when.date())
+            if entry.when.date() not in dates:
+                dates.append(entry.when.date())
         return cls(
             description = settings.description,
-            days = [],
+            dates = sorted(dates),
             schedule = schedule
         )

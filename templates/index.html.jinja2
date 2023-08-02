@@ -11,51 +11,51 @@
                 <p class="is-size-7">Details: <span x-text="fetch_error_detail"></span>.</p>
             </div>
         </template>
-        <div class="tabs is-centered">
-            <ul>
-                <li class="is-active"><a>Do, 3.8.</a></li>
-                <li><a>Fr, 4.8.</a></li>
-                <li><a>Sa, 5.8.</a></li>
-                <li><a>So, 6.8.</a></li>
-            </ul>
-        </div>
-        <div class="card">
-            <div class="card-content">
-                <div class="media">
-                    <!--
+        <template x-if="is_data_loaded && !fetch_error">
+            <div>
+                <div class="tabs is-centered">
+                    <ul>
+                        <template x-for="date in timetable.dates">
+                            <li :class="[date == selected_date ? 'is-active' : '']"><a x-text="render_date(date)"></a>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="media">
+                            <!--
                     <div class="media-left">
                         <figure class="image is-48x48">
                             <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
                         </figure>
                     </div>
                     -->
-                    <div class="media-content">
-                        <p class="title is-4">Thater im Kino – <em>All Nights in my head</em></p>
-                        <p class="subtitle is-6">18:00, Theaterstall</p>
-                    </div>
-                    <div class="tags are-medium">
-                        <span class="tag is-link">Theater</span>
-                        <span class="tag is-link">BrRh</span>
-                    </div>
-                </div>
+                            <div class="media-content">
+                                <p class="title is-4">Thater im Kino – <em>All Nights in my head</em></p>
+                                <p class="subtitle is-6">18:00, Theaterstall</p>
+                            </div>
+                            <div class="tags are-medium">
+                                <span class="tag is-link">Theater</span>
+                                <span class="tag is-link">BrRh</span>
+                            </div>
+                        </div>
 
-                <div class="content">
-                    Ein Gedanke. Licht an. Noch ein Gedanke. Überflutet die Bühne. Noch ein Gedanke. Kein Schlaf. Hunderte Gedanken prasseln auf dich hernieder wie der Regen. Du liegst im Bett, ertrinkst in Erinnerungen. Wenn du deinen Kopf in den Schoß der Schlaflosigkeit legst, streichelt sie deine Haare, flüstert in dein Ohr. "Du musst etwas tun", sagt sie. Nur was, das verrät sie dir nicht. Ein Stück, wie eine schlaflose Nacht.
+                        <div class="content">
+                            Ein Gedanke. Licht an. Noch ein Gedanke. Überflutet die Bühne. Noch ein Gedanke. Kein
+                            Schlaf.
+                            Hunderte Gedanken prasseln auf dich hernieder wie der Regen. Du liegst im Bett, ertrinkst in
+                            Erinnerungen. Wenn du deinen Kopf in den Schoß der Schlaflosigkeit legst, streichelt sie
+                            deine
+                            Haare, flüstert in dein Ohr. "Du musst etwas tun", sagt sie. Nur was, das verrät sie dir
+                            nicht.
+                            Ein
+                            Stück, wie eine schlaflose Nacht.
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <h1 class="title">Persons</h1>
-        <div x-show="is_data_loaded">
-            <template x-for="course in courses">
-                <div>
-                    <h2 class="subtitle"><span x-text="course.name"></span></h2>
-                    <template x-for="student in course.students">
-                        <p class="paragraph"><span x-text="student.name"></span>, <span x-text="student.age"></span>
-                            years old.</p>
-                    </template>
-                </div>
-            </template>
-        </div>
+        </template>
     </section>
 </div>
 {% endblock %}
@@ -66,10 +66,11 @@
             is_data_loaded: false,
             fetch_error: null,
             fetch_error_detail: "",
-            courses: null,
+            timetable: null,
+            selected_date: null,
 
             fetch_data() {
-                fetch("api/course")
+                fetch("api/timetable")
                     .then(res => {
                         if (!res.ok) {
                             this.fetch_error = res;
@@ -79,12 +80,21 @@
                     .then(data => {
                         if (this.fetch_error === null) {
                             this.is_data_loaded = true;
-                            this.courses = data;
+                            this.timetable = data;
+                            this.selected_date = data.dates[0];
                         } else if ("detail" in data) {
                             this.fetch_error_detail = data.detail;
                         }
                     });
             },
+            render_date(date_str) {
+                const day_names = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+                const date = new Date(date_str);
+                const day_name = day_names[date.getDay()];
+                const day_number = date.getDate();
+                const month = date.getMonth() + 1;
+                return `${day_name}, ${day_number}.${month}`;
+            }
         }
     }
 </script>
