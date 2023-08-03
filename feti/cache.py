@@ -2,31 +2,44 @@ from .config import settings
 from .log import logger
 from .model import ClientModel, NocoTimetable
 
-import asyncio
+from threading import Lock, Thread
+import time
 from typing import Optional
 
 
-class DataCache:
-    """Caches the data of NocoDB."""
+class CacheNotInitializedError(Exception):
+    pass
+
+
+class DataCacheThread(Thread):
     def __init__(self):
+        super().__init__()
         self.__sleep: int = settings.cache_persistance_duration
-        self.__lock: asyncio.Lock = asyncio.Lock()
         self.__data: Optional[ClientModel] = None
+        self.__do_quit: bool = False
     
-    async def run(self):
+    def run(self):
         while True:
-            logger.debug("pull new version of data")
+            logger.info("pull new version of data")
             noco_data = NocoTimetable.from_nocodb()
             temp = ClientModel.from_noco_model(noco_data)
-            async with self.__lock:
-                logger.debug("update data with new version")
-                self.__data = temp
-            await asyncio.sleep(self.__sleep)
+            logger.info("update data with new version")
+            self.__data = temp
+            slept: int = 0
+            while slept < self.__sleep:
+                time.sleep(1)
+                slept += 1
+                if self.__do_quit:
+                    break
+            if self.__do_quit:
+                break
 
-    async def get(self) -> ClientModel:
+    def get(self) -> ClientModel:
         while not self.__data:
-            logger.warn("data is not yet pulled will try again in 5s")
-            await asyncio.sleep(5)
-        async with self.__lock:
-            rsl = self.__data
+            logger.warn("data is not yet pulled will try again in 1s")
+            time.sleep(1)
+        rsl = self.__data
         return rsl
+
+    def quit(self):
+        self.__do_quit = True

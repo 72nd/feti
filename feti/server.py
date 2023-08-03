@@ -1,4 +1,4 @@
-from .cache import DataCache
+from .cache import DataCacheThread
 from .config import settings
 from .log import logger
 
@@ -18,11 +18,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
-cache = DataCache()
+cache = DataCacheThread()
 
 
 def log_request():
-    if not settings.request_log_file and not isinstance(settings.request_log_file, str):
+    if not isinstance(settings.request_log_file, str) or settings.request_log_file == "":
         return
     with open(settings.request_log_file, "a") as f:
         f.write("\n"+datetime.datetime.now().isoformat())
@@ -30,7 +30,12 @@ def log_request():
 
 @app.on_event("startup")
 async def on_startup():
-    asyncio.create_task(cache.run())
+    cache.start()
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    cache.quit()
 
 
 @app.get("/")
@@ -47,7 +52,7 @@ async def root(request: Request):
 async def get_timetable(background_tasks: BackgroundTasks):
     background_tasks.add_task(log_request)
     try:
-        data = await cache.get()
+        data = cache.get()
     except NocoDBAPIError as e:
         message = f"NocoDBAPIError. Message: {e}. Response Text: {e.response_text}"
         logger.error(message)
