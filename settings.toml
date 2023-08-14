@@ -1,18 +1,18 @@
 [feti]
 port = 8000
 proxy_headers = true
-nocodb_url = "https://noco.1-2-wir.org"
+nocodb_url = "https://noco-instance.com"
 nocodb_org_name = "noco"
-project_name = "Festival für Freunde"
+project_name = "My Project"
 log_level = "DEBUG"
 dev_mode = true
 cache_persistance_duration = 30
 max_lead_length = 300
 request_log_file = ""
 
-table_timetable = "23_timetable"
-table_entries = "23_bewerbungen"
-table_location = "23_location"
+table_timetable = "timetable"
+table_entries = "entries"
+table_location = "location"
 column_timetable_when = "when"
 column_timetable_entry = "entry"
 column_timetable_location = "location"
