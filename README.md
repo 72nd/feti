@@ -1,6 +1,6 @@
 <div align="center" style="border-bottom: none">
   <h1>
-    <img src="misc/logo.svg" width="120"/>
+    <img src="static/img/logo.svg" width="120"/>
     <br>
     feti
   </h1>
