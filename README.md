@@ -5,7 +5,7 @@
     feti
   </h1>
   <h2>Simple interactive timetable for conferences or festivals with NocoDB as backend</h2>
-  <p><a href="README-de.md">Deutsche Version</a></p>
+  <!--<p><a href="README-de.md">Deutsche Version</a></p>-->
 </div>
 
 Feti (for »festival timetable«) provides the guests of your event with a simple yet comprehensive timetable. Originally developed for a art festival feti should be usable for a wide range of festivals or conferences which consist of a number of sub-events like talks, concerts or performances. [NocoDB](https://nocodb.com/) is used as the backend to provide your team members with straightforward interface to manage the events.
